@@ -1,6 +1,7 @@
 package volume
 
 import (
+	"context"
 	"log"
 	"net/http"
 
@@ -35,8 +36,9 @@ type RemoveRequest struct {
 
 // MountRequest structure for a volume mount request
 type MountRequest struct {
-	Name string
-	ID   string
+	Context context.Context `json:"-"`
+	Name    string
+	ID      string
 }
 
 // MountResponse structure for a volume mount response
@@ -164,6 +166,7 @@ func (h *Handler) initMux() {
 		if err != nil {
 			return
 		}
+		req.Context = r.Context()
 		res, err := h.driver.Mount(req)
 		if err != nil {
 			sdk.EncodeResponse(w, NewErrorResponse(err.Error()), true)
